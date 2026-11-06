@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'drf_spectacular',
+    'pacientes',
 ]
 
 MIDDLEWARE = [
@@ -136,4 +137,10 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.TokenAuthentication',
     ],
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+}
+
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'Prontuário Eletrônico API',
+    'DESCRIPTION': 'API para gerenciamento de prontuários eletrônicos de pacientes.',
+    'VERSION': '1.0.0',
 }
