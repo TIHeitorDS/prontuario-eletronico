@@ -340,7 +340,7 @@ Os testes são executados com `pytest` (16 testes). As métricas escolhidas fora
 | Métrica | Ferramenta | Valor |
 | --- | --- | --- |
 | Cobertura de testes | pytest-cov / SonarQube | 93% / 92,9% |
-| Complexidade ciclomática | radon / SonarQube | média A (1,4) / total 39 |
+| Complexidade ciclomática | radon / SonarQube | média A (1,4) / total 40 |
 
 ![Painel de métricas do SonarQube](docs/metricas-sonar.png)
 
