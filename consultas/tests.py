@@ -1,4 +1,4 @@
-from datetime import date, time
+from datetime import date, time, timedelta
 
 from django.urls import reverse
 from rest_framework import status
@@ -15,13 +15,13 @@ class ConsultaAPITestCase(APITestCase):
             endereco='Rua A, 1', cidade='Mossoró', estado='RN', telefone='84999998888',
         )
         self.consulta = Consulta.objects.create(
-            paciente=self.paciente, data=date(2026, 12, 1), horario=time(9, 0), descricao='Rotina',
+            paciente=self.paciente, data=date.today() + timedelta(days=30), horario=time(9, 0), descricao='Rotina',
         )
         self.list_url = reverse('consulta-list')
         self.detail_url = reverse('consulta-detail', kwargs={'pk': self.consulta.pk})
 
     def payload(self, **kw):
-        base = {'paciente': self.paciente.pk, 'data': '2026-12-01', 'horario': '10:00:00', 'descricao': 'Retorno'}
+        base = {'paciente': self.paciente.pk, 'data': (date.today() + timedelta(days=30)).isoformat(), 'horario': '10:00:00', 'descricao': 'Retorno'}
         base.update(kw)
         return base
 
@@ -29,6 +29,17 @@ class ConsultaAPITestCase(APITestCase):
         response = self.client.post(self.list_url, self.payload(), format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(Consulta.objects.count(), 2)
+
+    def test_nao_agenda_consulta_em_data_passada(self):
+        passado = (date.today() - timedelta(days=1)).isoformat()
+        response = self.client.post(self.list_url, self.payload(data=passado), format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn('data', response.data)
+
+    def test_nao_agenda_consulta_em_horario_ocupado_do_paciente(self):
+        response = self.client.post(self.list_url, self.payload(horario='09:00:00'), format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(Consulta.objects.count(), 1)
 
     def test_atualizar_consulta(self):
         response = self.client.patch(self.detail_url, {'descricao': 'Nova'}, format='json')
@@ -47,7 +58,7 @@ class RegistrosDaConsultaAPITestCase(APITestCase):
             endereco='Rua A, 1', cidade='Mossoró', estado='RN', telefone='84999998888',
         )
         self.consulta = Consulta.objects.create(
-            paciente=paciente, data=date(2026, 12, 1), horario=time(9, 0), descricao='Rotina',
+            paciente=paciente, data=date.today() + timedelta(days=30), horario=time(9, 0), descricao='Rotina',
         )
         self.outra = Consulta.objects.create(
             paciente=paciente, data=date(2026, 12, 2), horario=time(9, 0), descricao='Retorno',
