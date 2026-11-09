@@ -4,26 +4,28 @@ API RESTful para gerenciamento de prontuários eletrônicos de pacientes, histó
 
 ---
 
-## 📌 Sumário
+## Sumário
 
-- [Tecnologias Utilizadas](#-tecnologias-utilizadas)
-- [Estrutura do Projeto](#-estrutura-do-projeto)
-- [Instruções de Execução](#-instruções-de-execução)
+- [Tecnologias Utilizadas](#tecnologias-utilizadas)
+- [Estrutura do Projeto](#estrutura-do-projeto)
+- [Instruções de Execução](#instruções-de-execução)
   - [Pré-requisitos](#pré-requisitos)
   - [Passo a Passo](#passo-a-passo)
   - [Executando Testes](#executando-testes)
-- [Descrição da API](#-descrição-da-api)
+- [Descrição da API](#descrição-da-api)
   - [Documentação Interativa (Swagger / Redoc)](#documentação-interativa-swagger--redoc)
   - [Autenticação](#autenticação)
   - [Endpoints](#endpoints)
   - [Exemplos de Uso e Payloads](#exemplos-de-uso-e-payloads)
-- [Licença](#-licença)
+- [Regras de Negócio](#regras-de-negócio)
+- [Testes e Métricas](#testes-e-métricas)
+- [Licença](#licença)
 
 ---
 
-## 🚀 Tecnologias Utilizadas
+## Tecnologias Utilizadas
 
-- **[Python](https://www.python.org/)** (v3.10+)
+- **[Python](https://www.python.org/)** (v3.12+)
 - **[Django](https://www.djangoproject.com/)** (v6.1+)
 - **[Django REST Framework](https://www.django-rest-framework.org/)**
 - **[drf-spectacular](https://drf-spectacular.readthedocs.io/)** (Documentação OpenAPI 3.0 / Swagger / ReDoc)
@@ -32,25 +34,28 @@ API RESTful para gerenciamento de prontuários eletrônicos de pacientes, histó
 
 ---
 
-## 📁 Estrutura do Projeto
+## Estrutura do Projeto
 
 ```text
 prontuario-eletronico/
 ├── core/              # Configurações do projeto Django (settings, URLs, WSGI/ASGI)
 ├── pacientes/         # App para gerenciamento e cadastro de pacientes
 ├── consultas/         # App para consultas, sintomas, diagnósticos e prescrições
+├── docs/              # Imagens usadas na documentação (print do SonarQube)
 ├── manage.py          # Utilitário de linha de comando do Django
 ├── requirements.txt   # Dependências do projeto
+├── pytest.ini         # Configuração do pytest e da cobertura de testes
+├── sonar-project.properties  # Configuração da análise no SonarQube
 └── README.md          # Documentação do projeto
 ```
 
 ---
 
-## ⚙️ Instruções de Execução
+## Instruções de Execução
 
 ### Pré-requisitos
 
-- **Python** 3.10 ou superior instalado na máquina.
+- **Python** 3.12 ou superior (requisito do Django 6) instalado na máquina.
 - **Git** para versionamento.
 
 ---
@@ -60,25 +65,28 @@ prontuario-eletronico/
 #### 1. Clonar o repositório
 
 ```bash
-git clone https://github.com/seu-usuario/prontuario-eletronico.git
+git clone https://github.com/TIHeitorDS/prontuario-eletronico.git
 cd prontuario-eletronico
 ```
 
 #### 2. Criar e ativar o ambiente virtual
 
 - **No Windows (PowerShell):**
+
   ```powershell
   python -m venv .venv
   .venv\Scripts\Activate.ps1
   ```
 
 - **No Windows (Prompt de Comando - CMD):**
+
   ```cmd
   python -m venv .venv
   .venv\Scripts\activate.bat
   ```
 
 - **No Linux / macOS (Bash / Zsh):**
+  
   ```bash
   python3 -m venv .venv
   source .venv/bin/activate
@@ -101,6 +109,7 @@ python manage.py migrate
 ```bash
 python manage.py createsuperuser
 ```
+
 > Siga os prompts na tela para definir usuário, e-mail e senha.
 
 #### 6. Iniciar o servidor de desenvolvimento
@@ -130,26 +139,27 @@ pytest
 
 ---
 
-## 📖 Descrição da API
+## Descrição da API
 
 ### Documentação Interativa (Swagger / Redoc)
 
 Com o servidor em execução, você pode visualizar e interagir com a documentação interativa gerada via OpenAPI 3:
 
-| Interface | URL | Descrição |
-| --- | --- | --- |
-| **Swagger UI** | `http://127.0.0.1:8000/api/schema/swagger/` | Teste interativo das rotas e visualização da especificação |
-| **ReDoc** | `http://127.0.0.1:8000/api/schema/redoc/` | Documentação técnica detalhada das requisições e respostas |
-| **OpenAPI Schema** | `http://127.0.0.1:8000/api/schema/` | Schema bruto da API em formato YAML/JSON |
+| Interface          | URL                                         | Descrição                                                  |
+| ------------------ | ------------------------------------------- | ---------------------------------------------------------- |
+| **Swagger UI**     | `http://127.0.0.1:8000/api/schema/swagger/` | Teste interativo das rotas e visualização da especificação |
+| **ReDoc**          | `http://127.0.0.1:8000/api/schema/redoc/`   | Documentação técnica detalhada das requisições e respostas |
+| **OpenAPI Schema** | `http://127.0.0.1:8000/api/schema/`         | Schema bruto da API em formato YAML/JSON                   |
 
 ---
 
 ### Autenticação
 
 A API oferece suporte aos seguintes esquemas de autenticação definidos pelo Django REST Framework:
+
 - **SessionAuthentication** (sessão do navegador/admin)
 - **BasicAuthentication** (credenciais via cabeçalho HTTP `Authorization: Basic ...`)
-- **TokenAuthentication** (cabeçalho HTTP `Authorization: Token <seu_token>`)
+- **TokenAuthentication** (cabeçalho HTTP `Authorization: Token <seu_token>`; os tokens são criados pelo Django Admin)
 
 ---
 
@@ -159,61 +169,61 @@ Base URL: `http://127.0.0.1:8000/api/`
 
 #### 1. Pacientes (`/api/pacientes/`)
 
-| Método | Rota | Descrição |
-| --- | --- | --- |
-| `GET` | `/api/pacientes/` | Lista todos os pacientes cadastrados |
-| `POST` | `/api/pacientes/` | Cadastra um novo paciente |
-| `GET` | `/api/pacientes/{id}/` | Retorna os detalhes de um paciente específico |
-| `PUT` | `/api/pacientes/{id}/` | Atualiza todos os campos de um paciente |
-| `PATCH` | `/api/pacientes/{id}/` | Atualiza parcialmente os dados de um paciente |
-| `DELETE` | `/api/pacientes/{id}/` | Remove o paciente cadastrado |
+| Método   | Rota                   | Descrição                                     |
+| -------- | ---------------------- | --------------------------------------------- |
+| `GET`    | `/api/pacientes/`      | Lista todos os pacientes cadastrados          |
+| `POST`   | `/api/pacientes/`      | Cadastra um novo paciente                     |
+| `GET`    | `/api/pacientes/{id}/` | Retorna os detalhes de um paciente específico |
+| `PUT`    | `/api/pacientes/{id}/` | Atualiza todos os campos de um paciente       |
+| `PATCH`  | `/api/pacientes/{id}/` | Atualiza parcialmente os dados de um paciente |
+| `DELETE` | `/api/pacientes/{id}/` | Remove o paciente cadastrado                  |
 
 #### 2. Consultas (`/api/consultas/`)
 
-| Método | Rota | Descrição |
-| --- | --- | --- |
-| `GET` | `/api/consultas/` | Lista todas as consultas |
-| `POST` | `/api/consultas/` | Registra uma nova consulta médica |
-| `GET` | `/api/consultas/{id}/` | Retorna os detalhes de uma consulta |
-| `PUT` | `/api/consultas/{id}/` | Atualiza todos os campos de uma consulta |
-| `PATCH` | `/api/consultas/{id}/` | Atualiza parcialmente os dados de uma consulta |
-| `DELETE` | `/api/consultas/{id}/` | Remove uma consulta |
+| Método   | Rota                   | Descrição                                      |
+| -------- | ---------------------- | ---------------------------------------------- |
+| `GET`    | `/api/consultas/`      | Lista todas as consultas                       |
+| `POST`   | `/api/consultas/`      | Registra uma nova consulta médica              |
+| `GET`    | `/api/consultas/{id}/` | Retorna os detalhes de uma consulta            |
+| `PUT`    | `/api/consultas/{id}/` | Atualiza todos os campos de uma consulta       |
+| `PATCH`  | `/api/consultas/{id}/` | Atualiza parcialmente os dados de uma consulta |
+| `DELETE` | `/api/consultas/{id}/` | Remove uma consulta                            |
 
 #### 3. Sintomas (`/api/sintomas/`)
 
-| Método | Rota | Descrição |
-| --- | --- | --- |
-| `GET` | `/api/sintomas/` | Lista todos os sintomas |
-| `GET` | `/api/sintomas/?consulta={id}` | Filtra sintomas vinculados a uma consulta específica |
-| `POST` | `/api/sintomas/` | Registra um sintoma para uma consulta |
-| `GET` | `/api/sintomas/{id}/` | Retorna os detalhes de um sintoma |
-| `PUT` | `/api/sintomas/{id}/` | Atualiza um sintoma |
-| `PATCH` | `/api/sintomas/{id}/` | Atualiza parcialmente um sintoma |
-| `DELETE` | `/api/sintomas/{id}/` | Remove um sintoma |
+| Método   | Rota                           | Descrição                                            |
+| -------- | ------------------------------ | ---------------------------------------------------- |
+| `GET`    | `/api/sintomas/`               | Lista todos os sintomas                              |
+| `GET`    | `/api/sintomas/?consulta={id}` | Filtra sintomas vinculados a uma consulta específica |
+| `POST`   | `/api/sintomas/`               | Registra um sintoma para uma consulta                |
+| `GET`    | `/api/sintomas/{id}/`          | Retorna os detalhes de um sintoma                    |
+| `PUT`    | `/api/sintomas/{id}/`          | Atualiza um sintoma                                  |
+| `PATCH`  | `/api/sintomas/{id}/`          | Atualiza parcialmente um sintoma                     |
+| `DELETE` | `/api/sintomas/{id}/`          | Remove um sintoma                                    |
 
 #### 4. Diagnósticos (`/api/diagnosticos/`)
 
-| Método | Rota | Descrição |
-| --- | --- | --- |
-| `GET` | `/api/diagnosticos/` | Lista todos os diagnósticos |
-| `GET` | `/api/diagnosticos/?consulta={id}` | Filtra diagnósticos vinculados a uma consulta |
-| `POST` | `/api/diagnosticos/` | Registra um diagnóstico para uma consulta |
-| `GET` | `/api/diagnosticos/{id}/` | Retorna os detalhes de um diagnóstico |
-| `PUT` | `/api/diagnosticos/{id}/` | Atualiza um diagnóstico |
-| `PATCH` | `/api/diagnosticos/{id}/` | Atualiza parcialmente um diagnóstico |
-| `DELETE` | `/api/diagnosticos/{id}/` | Remove um diagnóstico |
+| Método   | Rota                               | Descrição                                     |
+| -------- | ---------------------------------- | --------------------------------------------- |
+| `GET`    | `/api/diagnosticos/`               | Lista todos os diagnósticos                   |
+| `GET`    | `/api/diagnosticos/?consulta={id}` | Filtra diagnósticos vinculados a uma consulta |
+| `POST`   | `/api/diagnosticos/`               | Registra um diagnóstico para uma consulta     |
+| `GET`    | `/api/diagnosticos/{id}/`          | Retorna os detalhes de um diagnóstico         |
+| `PUT`    | `/api/diagnosticos/{id}/`          | Atualiza um diagnóstico                       |
+| `PATCH`  | `/api/diagnosticos/{id}/`          | Atualiza parcialmente um diagnóstico          |
+| `DELETE` | `/api/diagnosticos/{id}/`          | Remove um diagnóstico                         |
 
 #### 5. Prescrições (`/api/prescricoes/`)
 
-| Método | Rota | Descrição |
-| --- | --- | --- |
-| `GET` | `/api/prescricoes/` | Lista todas as prescrições médicas |
-| `GET` | `/api/prescricoes/?consulta={id}` | Filtra prescrições vinculadas a uma consulta |
-| `POST` | `/api/prescricoes/` | Registra uma nova prescrição médica |
-| `GET` | `/api/prescricoes/{id}/` | Retorna os detalhes de uma prescrição |
-| `PUT` | `/api/prescricoes/{id}/` | Atualiza uma prescrição |
-| `PATCH` | `/api/prescricoes/{id}/` | Atualiza parcialmente uma prescrição |
-| `DELETE` | `/api/prescricoes/{id}/` | Remove uma prescrição |
+| Método   | Rota                              | Descrição                                    |
+| -------- | --------------------------------- | -------------------------------------------- |
+| `GET`    | `/api/prescricoes/`               | Lista todas as prescrições médicas           |
+| `GET`    | `/api/prescricoes/?consulta={id}` | Filtra prescrições vinculadas a uma consulta |
+| `POST`   | `/api/prescricoes/`               | Registra uma nova prescrição médica          |
+| `GET`    | `/api/prescricoes/{id}/`          | Retorna os detalhes de uma prescrição        |
+| `PUT`    | `/api/prescricoes/{id}/`          | Atualiza uma prescrição                      |
+| `PATCH`  | `/api/prescricoes/{id}/`          | Atualiza parcialmente uma prescrição         |
+| `DELETE` | `/api/prescricoes/{id}/`          | Remove uma prescrição                        |
 
 ---
 
@@ -222,6 +232,7 @@ Base URL: `http://127.0.0.1:8000/api/`
 #### Criar Paciente (`POST /api/pacientes/`)
 
 **Payload:**
+
 ```json
 {
   "nome": "João Silva",
@@ -236,17 +247,21 @@ Base URL: `http://127.0.0.1:8000/api/`
   "telefone": "84999998888"
 }
 ```
-*Obs: O campo `sexo` aceita `'M'` (Masculino), `'F'` (Feminino) ou `'O'` (Outro). O campo `cpf` deve ser único.*
+
+_Obs: O campo `sexo` aceita `'M'` (Masculino), `'F'` (Feminino) ou `'O'` (Outro). O campo `cpf` deve ser único._
 
 ---
 
 #### Agendar Consulta (`POST /api/consultas/`)
 
+_Obs: a `data` não pode ser passada, e o paciente não pode ter outra consulta no mesmo dia e horário (veja [Regras de Negócio](#regras-de-negócio))._
+
 **Payload:**
+
 ```json
 {
   "paciente": 1,
-  "data": "2026-12-01",
+  "data": "2027-12-01",
   "horario": "09:30:00",
   "descricao": "Consulta de rotina cardiológica"
 }
@@ -257,6 +272,7 @@ Base URL: `http://127.0.0.1:8000/api/`
 #### Cadastrar Sintoma (`POST /api/sintomas/`)
 
 **Payload:**
+
 ```json
 {
   "consulta": 1,
@@ -269,6 +285,7 @@ Base URL: `http://127.0.0.1:8000/api/`
 #### Cadastrar Diagnóstico (`POST /api/diagnosticos/`)
 
 **Payload:**
+
 ```json
 {
   "consulta": 1,
@@ -281,6 +298,7 @@ Base URL: `http://127.0.0.1:8000/api/`
 #### Cadastrar Prescrição (`POST /api/prescricoes/`)
 
 **Payload:**
+
 ```json
 {
   "consulta": 1,
@@ -306,6 +324,28 @@ curl http://127.0.0.1:8000/api/prescricoes/?consulta=1
 
 ---
 
-## 📄 Licença
+## Regras de Negócio
+
+Implementadas em `consultas/serializers.py` (`ConsultaSerializer`):
+
+- Não é possível agendar uma consulta em data passada.
+- Um paciente não pode ter duas consultas no mesmo dia e horário.
+
+---
+
+## Testes e Métricas
+
+Os testes são executados com `pytest` (16 testes). As métricas escolhidas foram **cobertura de testes** e **complexidade ciclomática**:
+
+| Métrica | Ferramenta | Valor |
+| --- | --- | --- |
+| Cobertura de testes | pytest-cov / SonarQube | 93% / 92,9% |
+| Complexidade ciclomática | radon / SonarQube | média A (1,4) / total 39 |
+
+![Painel de métricas do SonarQube](docs/metricas-sonar.png)
+
+---
+
+## Licença
 
 Este projeto é distribuído sob os termos da licença [MIT](LICENSE).
