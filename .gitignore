@@ -83,9 +83,9 @@ htmlcov/
 .cache 
 .pytest_cache/ 
 nosetests.xml 
+coverage.xml
 *.cover 
 .hypothesis/ 
-
 # Jupyter Notebook 
 .ipynb_checkpoints 
 
@@ -137,3 +137,5 @@ GitHub.sublime-settings
 !.vscode/launch.json 
 !.vscode/extensions.json 
 .history
+
+.scannerwork
